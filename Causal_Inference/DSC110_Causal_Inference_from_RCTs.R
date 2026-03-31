@@ -1,14 +1,16 @@
-library(speff2trial)
-data("ACTG175")
+df <- read.csv("https://raw.githubusercontent.com/osoliman/DSC110/refs/heads/main/Datasets/Causal_Inference_RCT.csv")
 
-# Simplify to just two treatment arms (ZDV vs ZDV+ddI)
-actg_simple <- subset(ACTG175, arms %in% c(0, 1))
+head(df)
 
-# Rename treatment: 0 = ZDV only, 1 = ZDV + ddI
-actg_simple$treatment <- actg_simple$arms
+install.packages("effectsize")
+library(effectsize)
 
-# PRIMARY ANALYSIS: T-test on outcome (CD4 count at 20 weeks)
-t.test(cd420 ~ treatment, data = actg_simple)
+result <- t.test(df$Treatment, df$Control, paired = FALSE)
+es     <- cohens_d(df$Treatment, df$Control)
 
-# BALANCE CHECK: Check if baseline CD4 is similar (it should be!)
-t.test(cd40 ~ treatment, data = actg_simple)
+result$p.value
+result$conf.int
+es
+
+t.test(df$Treatment)$conf.int   # CI for Treatment mean
+t.test(df$Control)$conf.int     # CI for Control mean
